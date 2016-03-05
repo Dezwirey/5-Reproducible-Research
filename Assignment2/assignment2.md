@@ -17,7 +17,7 @@ First of all, we download and read the data using download.file and read.csv res
 ```r
 url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
 download.file (url, destfile = "data.csv.bz2")
-data <- read.csv ("data.csv.bz2")
+data <- read.csv("data.csv.bz2")
 ```
 
 Now we take a look at the data using the tbl_df function of the dplyr package.
@@ -112,13 +112,13 @@ tbl_df(totalNumbers)
 Now we prepare small subsets of totalNumbers for plotting. Fatal contains the top ten event types for fatalities. However, the fatality values may be ordered now, but the levels of evtype are not. To plot nice descending bars in our barplot, we arrange the levels so that they correspond with the fatality values. Then we plot using the ggplot2 package.
 
 ```r
-fatal <- arrange(totalNumbers, desc(fatalities))[1:10,]
-fatal$evtype <- factor(fatal$evtype, levels = fatal$evtype[order(fatal$fatalities)])
+fatal <- arrange(totalNumbers, desc(fatalities))[1:15,]
+fatal$evtype <- factor(fatal$evtype, levels = fatal$evtype[order(fatal$fatalities, decreasing = TRUE)])
 
 library(ggplot2)
-g <- ggplot(fatal, aes(evtype, fatalities))
-g + geom_bar(stat="identity", fill = "darkred") + coord_flip() + 
-        xlab("Event Types") + ylab("Number of Fatalities") + ggtitle("Event types with most fatalities")
+ggplot(fatal, aes(evtype, fatalities)) +  geom_bar(stat="identity", fill = "darkred") +
+        xlab("Event Types") + ylab("Number of Fatalities") + ggtitle("Event types with most fatalities") +
+        theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
 
 ![](assignment2_files/figure-html/unnamed-chunk-5-1.png)
@@ -126,12 +126,12 @@ g + geom_bar(stat="identity", fill = "darkred") + coord_flip() +
 Plotting the injury numbers is analogous. Injur contains the top ten event types for injuries. Again, we have to order the evtype levels.
 
 ```r
-injur <- arrange(totalNumbers, desc(injuries))[1:10,]
-injur$evtype <- factor(injur$evtype, levels = injur$evtype[order(injur$injuries)])
+injur <- arrange(totalNumbers, desc(injuries))[1:15,]
+injur$evtype <- factor(injur$evtype, levels = injur$evtype[order(injur$injuries, decreasing = TRUE)])
 
-g <- ggplot(injur, aes(evtype, injuries))
-g + geom_bar(stat="identity", fill = "darkred") + coord_flip() + 
-        xlab("Event Types") + ylab("Number of Injuries") + ggtitle("Event types with most injuries")
+ggplot(injur, aes(evtype, injuries)) + geom_bar(stat="identity", fill = "darkred") + 
+        xlab("Event Types") + ylab("Number of Injuries") + ggtitle("Event types with most injuries") +
+        theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
 
 ![](assignment2_files/figure-html/unnamed-chunk-6-1.png)
@@ -217,12 +217,12 @@ tbl_df(damage)
 To plot these numbers we subset the top ten, and again we have to address the issue that the levels of evtype are not ordered by the amount of damage that they cause (despite the totalDamage variable being arranged). We do so with the second statement. Only then we can plot.
 
 ```r
-dam <- damage[1:10,]
-dam$evtype <- factor(dam$evtype, levels = dam$evtype[order(dam$totalDamage)])
+dam <- damage[1:15,]
+dam$evtype <- factor(dam$evtype, levels = dam$evtype[order(dam$totalDamage, decreasing = TRUE)])
 
-g <- ggplot(dam, aes(evtype, totalDamage))
-g + geom_bar(stat="identity", fill = "darkblue") + coord_flip() + xlab("Event Types") + 
-        ylab("Total damage") + ggtitle("Event types with biggest economic consequences")
+ggplot(dam, aes(evtype, totalDamage)) + geom_bar(stat="identity", fill = "darkblue") + 
+        xlab("Event Types") + ylab("Total damage") + ggtitle("Event types with biggest economic consequences") +
+        theme(axis.text.x = element_text(angle=60, hjust=1))
 ```
 
 ![](assignment2_files/figure-html/unnamed-chunk-10-1.png)
