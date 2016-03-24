@@ -4,11 +4,12 @@ author: "Desiré De Waele"
 date: "25 februari 2016"
 output:
   html_document:
-    keep_md: yes
-  pdf_document: default
-  word_document: default
+    highlight: tango
+    theme: united
+    toc: yes
+    toc_depth: 2
 ---
-## Synopsis
+# Synopsis
 Storms and other severe weather events can cause both public health and economic problems for communities and municipalities. Many severe events can result in fatalities, injuries, and property damage, and preventing such outcomes to the extent possible is a key concern.
 
 This project involves exploring the U.S. National Oceanic and Atmospheric Administration's (NOAA) storm database. This database tracks characteristics of major storms and weather events in the United States, including when and where they occur, as well as estimates of any fatalities, injuries, and property damage.
@@ -18,7 +19,7 @@ This report handles two basic questions:
 1. Across the United States, which types of events are most harmful with respect to population health?
 2. Across the United States, which types of events have the greatest economic consequences?
 
-## Data Processing
+# Data Processing
 First of all, we download and read the data using download.file and read.csv respecitively.
 ```{r, cache = TRUE}
 url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
@@ -40,8 +41,8 @@ tbl_df(aData)
 ```
 These are the top rows of our analytic data.
 
-## Results
-### Relation between event type and population health
+# Results
+## Relation between event type and population health
 In order to show the total fatality and injury numbers per event type, we can apply the group_by and summarize function on our analytic data. Then we can arrange the new dataframe to already show some values.
 ```{r}
 totalNumbers <- aData %>% 
@@ -56,9 +57,11 @@ fatal <- arrange(totalNumbers, desc(fatalities))[1:15,]
 fatal$evtype <- factor(fatal$evtype, levels = fatal$evtype[order(fatal$fatalities, decreasing = TRUE)])
 
 library(ggplot2)
-ggplot(fatal, aes(evtype, fatalities)) +  geom_bar(stat="identity", fill = "darkred") +
-        xlab("Event Types") + ylab("Number of Fatalities") + ggtitle("Event types with most fatalities") +
-        theme(axis.text.x = element_text(angle=60, hjust=1))
+g = ggplot(fatal, aes(evtype, fatalities))
+g = g + geom_bar(stat="identity", fill = "darkred")
+g = g + theme(axis.text.x = element_text(angle=60, hjust=1))
+g = g + labs(x = "Event Types", y = "Number of Fatalities", title = "Event types with most fatalities")
+g
 ```
 
 Plotting the injury numbers is analogous. Injur contains the top ten event types for injuries. Again, we have to order the evtype levels.
@@ -66,14 +69,16 @@ Plotting the injury numbers is analogous. Injur contains the top ten event types
 injur <- arrange(totalNumbers, desc(injuries))[1:15,]
 injur$evtype <- factor(injur$evtype, levels = injur$evtype[order(injur$injuries, decreasing = TRUE)])
 
-ggplot(injur, aes(evtype, injuries)) + geom_bar(stat="identity", fill = "darkred") + 
-        xlab("Event Types") + ylab("Number of Injuries") + ggtitle("Event types with most injuries") +
-        theme(axis.text.x = element_text(angle=60, hjust=1))
+g = ggplot(injur, aes(evtype, injuries))
+g = g + geom_bar(stat="identity", fill = "darkred")
+g = g + theme(axis.text.x = element_text(angle=60, hjust=1))
+g = g + labs(x = "Event Types", y = "Number of Injuries", title = "Event types with most injuries")
+g
 ```
 
 Clearly, tornados are by far the most harmful for both fatalities and injuries. Excessive heat, flash food, heat and lightning seem to cause high numbers of fatalities as well, whereas tstm wind, flood, excessive heat and lightning are the biggest causes (after tornados) for injuries.
 
-### Relation between event type and economic consequences
+## Relation between event type and economic consequences
 To address the question which event types have the biggest economic consequences, we will first subset our analytic data. We select only the economic related columns, and filter out the observations with no property or crop damage. This makes our dataset a whole lot smaller.
 ```{r}
 damage <- aData %>% 
@@ -115,9 +120,11 @@ To plot these numbers we subset the top ten, and again we have to address the is
 dam <- damage[1:15,]
 dam$evtype <- factor(dam$evtype, levels = dam$evtype[order(dam$totalDamage, decreasing = TRUE)])
 
-ggplot(dam, aes(evtype, totalDamage)) + geom_bar(stat="identity", fill = "darkblue") + 
-        xlab("Event Types") + ylab("Total damage") + ggtitle("Event types with biggest economic consequences") +
-        theme(axis.text.x = element_text(angle=60, hjust=1))
+g = ggplot(dam, aes(evtype, totalDamage))
+g = g + geom_bar(stat="identity", fill = "darkblue")
+g = g + theme(axis.text.x = element_text(angle=60, hjust=1))
+g = g + labs(x = "Event Types", y = "Total damage", title = "Event types with biggest economic consequences")
+g
 ```
 
 Floods are a clear winner here, followed by hurricanes, tornados and storm surges.
